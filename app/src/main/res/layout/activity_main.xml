@@ -44,6 +44,7 @@
         android:layout_marginBottom="30dp"
         android:layout_marginTop="6dp"
         android:background="@drawable/edittext"
+        android:hint="Max Mustermann"
         />
 
     <TextView
@@ -60,6 +61,7 @@
         android:layout_marginBottom="70dp"
         android:layout_marginTop="6dp"
         android:background="@drawable/edittext"
+        android:hint="+41123456789,0761..."
         />
 
     <Button
@@ -67,5 +69,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Activate" />
+    <TextView
+        android:id="@+id/inputHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        android:textSize="12dp" />
 
 </LinearLayout>
