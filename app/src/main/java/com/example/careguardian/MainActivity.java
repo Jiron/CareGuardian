@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor accelerometer;
 
     // Adjustable sensitivity for shake detection
-    private static final float SHAKE_THRESHOLD = 20.0f;
+    private static final float SHAKE_THRESHOLD = 25.0f;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final int SMS_PERMISSION_REQUEST_CODE = 2;
 
