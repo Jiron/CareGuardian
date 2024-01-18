@@ -1,18 +1,27 @@
 package com.example.careguardian;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private EditText name;
     private EditText contacts;
@@ -23,6 +32,15 @@ public class MainActivity extends AppCompatActivity {
     private String nameValue;
     private String contactsValue;
     private boolean isAlarmActivated = false;
+    private boolean isCountdownActive = false;
+
+
+
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+
+    // Adjustable sensitivity for shake detection
+    private static final float SHAKE_THRESHOLD = 20.0f;
 
 
     @Override
@@ -83,6 +101,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         alarmToggler.setOnClickListener(view -> toggleAlarm());
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        if (sensorManager != null) {
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+            if (accelerometer != null) {
+                sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            } else {
+                // Handle the case where the accelerometer is not available on the device
+                Toast.makeText(this, "Accelerometer not available", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public void toggleAlarm() {
@@ -146,6 +176,51 @@ public class MainActivity extends AppCompatActivity {
             inputHint.setText("(All fields must be filled out before activating)");
             inputHint.setTextColor(Color.parseColor("#FF0000"));
             alarmToggler.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && isAlarmActivated && !isCountdownActive) {
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+
+            float acceleration = (float) Math.sqrt(x * x + y * y + z * z);
+
+            if (acceleration > SHAKE_THRESHOLD) {
+                isCountdownActive = true;
+                Intent intent = new Intent(this, CountdownActivity.class);
+                intent.putExtra("name", nameValue);
+                intent.putExtra("contacts", contactsValue);
+                startCountdownActivityForResult.launch(intent);
+            }
+        }
+    }
+
+    private final ActivityResultLauncher<Intent> startCountdownActivityForResult =
+        registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    name.setText("gabagool");
+                } else if (result.getResultCode() == RESULT_CANCELED) {
+                    toggleAlarm();
+                }
+                isCountdownActive = false;
+            });
+
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Not needed for this example
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Unregister the sensor listener when the activity is destroyed
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
         }
     }
 }
