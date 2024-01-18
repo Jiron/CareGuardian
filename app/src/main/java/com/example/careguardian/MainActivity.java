@@ -201,11 +201,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private final ActivityResultLauncher<Intent> startCountdownActivityForResult =
         registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode() == RESULT_OK) {
-                    name.setText("gabagool");
-                } else if (result.getResultCode() == RESULT_CANCELED) {
-                    toggleAlarm();
-                }
+                // if (result.getResultCode() == RESULT_OK) {
+                //     // toggleAlarm();
+                // } else if (result.getResultCode() == RESULT_CANCELED) {
+                //     // toggleAlarm();
+                // }
+                toggleAlarm();
                 isCountdownActive = false;
             });
 
