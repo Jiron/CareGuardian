@@ -2,12 +2,16 @@ package com.example.careguardian;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -20,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.Manifest;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -33,14 +38,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private String contactsValue;
     private boolean isAlarmActivated = false;
     private boolean isCountdownActive = false;
-
-
+    private boolean alreadyRequestedLocationPerms = false;
+    private boolean alreadyRequestedSMSPerms = false;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
 
     // Adjustable sensitivity for shake detection
     private static final float SHAKE_THRESHOLD = 20.0f;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final int SMS_PERMISSION_REQUEST_CODE = 2;
 
 
     @Override
@@ -58,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
         nameValue = prefs.getString("nameTextView", "");
         contactsValue = prefs.getString("contactsTextView", "");
+        alreadyRequestedLocationPerms = prefs.getBoolean("alreadyRequestedLocationPerms", false);
+        alreadyRequestedSMSPerms = prefs.getBoolean("alreadyRequestedSMSPerms", false);
         updateAll(false);
 
         name.addTextChangedListener(new TextWatcher() {
@@ -117,6 +126,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void toggleAlarm() {
         if(!isAlarmActivated && !nameValue.equals("") && !contactsValue.equals("")) {
+            boolean permLocation = checkAndRequestPermission(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    LOCATION_PERMISSION_REQUEST_CODE
+            );
+            if(!permLocation) {
+                return;
+            }
+
+            boolean permSMS = checkAndRequestPermission(
+                    Manifest.permission.SEND_SMS,
+                    SMS_PERMISSION_REQUEST_CODE
+            );
+            if(!permSMS) {
+                return;
+            }
+
             alarmToggler.setText("Deactivate");
             status.setText("Activated");
             status.setTextColor(Color.parseColor("#00FF00"));
@@ -213,15 +238,56 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Not needed for this example
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Unregister the sensor listener when the activity is destroyed
         if (sensorManager != null) {
             sensorManager.unregisterListener(this);
         }
+    }
+
+    private boolean checkAndRequestPermission(String permission, int requestCode) {
+        if (ContextCompat.checkSelfPermission(this, permission)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            boolean isSms = permission ==Manifest.permission.SEND_SMS;
+            boolean isLocation = permission == Manifest.permission.ACCESS_FINE_LOCATION;
+            if((isSms && alreadyRequestedSMSPerms) || (isLocation && alreadyRequestedLocationPerms)) {
+                showToast("Please enable location and/or SMS perms in settings.");
+            } else {
+                SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                if(isLocation) {
+                    alreadyRequestedLocationPerms = true;
+                    editor.putBoolean("alreadyRequestedLocationPerms", true);
+
+                } else if (isSms) {
+                    alreadyRequestedSMSPerms = true;
+                    editor.putBoolean("alreadyRequestedSMSPerms", true);
+
+                }
+                editor.apply();
+                ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
+            }
+            return false;
+        }
+        return true;
+    }
+
+
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
