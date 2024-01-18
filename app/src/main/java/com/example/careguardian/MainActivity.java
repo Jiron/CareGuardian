@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float y = event.values[1];
             float z = event.values[2];
 
-            float acceleration = (float) Math.sqrt(x * x + y * y + z * z);
+            float acceleration = (float) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
 
             if (acceleration > SHAKE_THRESHOLD) {
                 isCountdownActive = true;
@@ -275,8 +275,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         return true;
     }
-
-
 
     @Override
     public void onRequestPermissionsResult(
