@@ -141,9 +141,11 @@ public class MainActivity extends AppCompatActivity {
                 inputHint.setText("");
             }
             inputHint.setTextColor(Color.parseColor("#000000"));
+            alarmToggler.setEnabled(true);
         } else {
             inputHint.setText("(All fields must be filled out before activating)");
             inputHint.setTextColor(Color.parseColor("#FF0000"));
+            alarmToggler.setEnabled(false);
         }
     }
 }
