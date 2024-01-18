@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -17,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText name;
     private EditText contacts;
+    private TextView inputHint;
     private TextView status;
     private Button alarmToggler;
 
@@ -35,12 +35,12 @@ public class MainActivity extends AppCompatActivity {
         contacts = findViewById(R.id.inputContacts);
         alarmToggler = findViewById(R.id.alarmToggler);
         status = findViewById(R.id.status);
+        inputHint = findViewById(R.id.inputHint);
 
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
         nameValue = prefs.getString("nameTextView", "");
         contactsValue = prefs.getString("contactsTextView", "");
         updateAll(false);
-        toggleAlarm();
 
         name.addTextChangedListener(new TextWatcher() {
             @Override
@@ -82,30 +82,26 @@ public class MainActivity extends AppCompatActivity {
                 updateContacts(true);
             }
         });
-        alarmToggler.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleAlarm();
-            }
-        });
+        alarmToggler.setOnClickListener(view -> toggleAlarm());
     }
 
     public void toggleAlarm() {
-        if(isAlarmActivated) {
+        if(!isAlarmActivated && !nameValue.equals("") && !contactsValue.equals("")) {
             alarmToggler.setText("Deactivate");
             status.setText("Activated");
             status.setTextColor(Color.parseColor("#00FF00"));
             name.setEnabled(false);
             contacts.setEnabled(false);
-            isAlarmActivated = false;
+            isAlarmActivated = true;
         } else {
             alarmToggler.setText("Activate");
             status.setText("Deactivated");
             name.setEnabled(true);
             contacts.setEnabled(true);
             status.setTextColor(Color.parseColor("#FF0000"));
-            isAlarmActivated = true;
+            isAlarmActivated = false;
         }
+        validateInputs();
     }
 
     public void updateAll(boolean ignoreSetText) {
@@ -122,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("nameTextView", nameValue);
         editor.apply();
+        validateInputs();
     }
 
     private void updateContacts(boolean ignoreSetText) {
@@ -133,5 +130,20 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("contactsTextView", contactsValue);
         editor.apply();
+        validateInputs();
+    }
+
+    private void validateInputs() {
+        if(!nameValue.equals("") && !contactsValue.equals("")) {
+            if (isAlarmActivated) {
+                inputHint.setText("(Please deactivate to change input data)");
+            } else {
+                inputHint.setText("");
+            }
+            inputHint.setTextColor(Color.parseColor("#000000"));
+        } else {
+            inputHint.setText("(All fields must be filled out before activating)");
+            inputHint.setTextColor(Color.parseColor("#FF0000"));
+        }
     }
 }
