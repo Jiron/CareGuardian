@@ -55,7 +55,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        updateAndAddValues();
+        addNameListener();
+        addContactsListener();
 
+        alarmToggler.setOnClickListener(view -> toggleAlarm());
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        if (sensorManager != null) {
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+            if (accelerometer != null) {
+                sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            } else {
+                // Handle the case where the accelerometer is not available on the device
+                Toast.makeText(this, "Accelerometer not available", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void updateAndAddValues() {
         name = findViewById(R.id.inputName);
         contacts = findViewById(R.id.inputContacts);
         alarmToggler = findViewById(R.id.alarmToggler);
@@ -68,7 +88,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         alreadyRequestedLocationPerms = prefs.getBoolean("alreadyRequestedLocationPerms", false);
         alreadyRequestedSMSPerms = prefs.getBoolean("alreadyRequestedSMSPerms", false);
         updateAll(false);
+    }
 
+    private void addNameListener() {
         name.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -89,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 updateName(true);
             }
         });
+    }
+    private void addContactsListener() {
         contacts.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -109,57 +133,52 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 updateContacts(true);
             }
         });
-        alarmToggler.setOnClickListener(view -> toggleAlarm());
-
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        if (sensorManager != null) {
-            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
-            if (accelerometer != null) {
-                sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-            } else {
-                // Handle the case where the accelerometer is not available on the device
-                Toast.makeText(this, "Accelerometer not available", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
-    public void toggleAlarm() {
+    private void toggleAlarm() {
         if(!isAlarmActivated && !nameValue.equals("") && !contactsValue.equals("")) {
-            boolean permLocation = checkAndRequestPermission(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    LOCATION_PERMISSION_REQUEST_CODE
-            );
-            if(!permLocation) {
-                return;
-            }
-
-            boolean permSMS = checkAndRequestPermission(
-                    Manifest.permission.SEND_SMS,
-                    SMS_PERMISSION_REQUEST_CODE
-            );
-            if(!permSMS) {
-                return;
-            }
-
-            alarmToggler.setText("Deactivate");
-            status.setText("Activated");
-            status.setTextColor(Color.parseColor("#00FF00"));
-            name.setEnabled(false);
-            contacts.setEnabled(false);
-            isAlarmActivated = true;
+            activateAlarm();
         } else {
-            alarmToggler.setText("Activate");
-            status.setText("Deactivated");
-            name.setEnabled(true);
-            contacts.setEnabled(true);
-            status.setTextColor(Color.parseColor("#FF0000"));
-            isAlarmActivated = false;
+            deactivateAlarm();
         }
         validateInputs();
     }
 
-    public void updateAll(boolean ignoreSetText) {
+    private void activateAlarm() {
+        boolean permLocation = checkAndRequestPermission(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                LOCATION_PERMISSION_REQUEST_CODE
+        );
+        if(!permLocation) {
+            return;
+        }
+
+        boolean permSMS = checkAndRequestPermission(
+                Manifest.permission.SEND_SMS,
+                SMS_PERMISSION_REQUEST_CODE
+        );
+        if(!permSMS) {
+            return;
+        }
+
+        alarmToggler.setText("Deactivate");
+        status.setText("Activated");
+        status.setTextColor(Color.parseColor("#00FF00"));
+        name.setEnabled(false);
+        contacts.setEnabled(false);
+        isAlarmActivated = true;
+    }
+
+    private void deactivateAlarm() {
+        alarmToggler.setText("Activate");
+        status.setText("Deactivated");
+        name.setEnabled(true);
+        contacts.setEnabled(true);
+        status.setTextColor(Color.parseColor("#FF0000"));
+        isAlarmActivated = false;
+    }
+
+    private void updateAll(boolean ignoreSetText) {
         updateName(ignoreSetText);
         updateContacts(ignoreSetText);
     }

@@ -69,26 +69,30 @@ public class CountdownActivity extends AppCompatActivity {
                 vibrate(new long[] { 100, 100, 100, 200 }, new int[] { 100, 150, 0, 255 }, -1); // transition up, short pause, strong vibration, 500ms total
             }, 1000);
         } else {
-            countDownText.setText("Calling for help...");
-            countDownTextDetail.setText("");
-            backButton.setText("Back to Home");
-
-            Intent caller = getIntent();
-            String[] contactsSplitByComma = caller.getStringExtra("contacts").trim().replace(" ", "").replace("\n", "").split(",");
-            smsService.sendSMS(contactsSplitByComma, caller.getStringExtra("name").trim() + " seems to have fallen down! Please check up on them asap!\nCurrent Location:", this, new SMSService.SmsSendCallback() {
-                @Override
-                public void onSendSuccess() {
-                    countDownText.setText("Emergency contacts\nhave been notified!");
-                    countDownTextDetail.setText("");
-                }
-
-                @Override
-                public void onSendFailure() {
-                    countDownText.setText("NOT all contacts\nhave been notified!");
-                    countDownTextDetail.setText("Check settings and call for help manually!");
-                }
-            });
+            callForHelp();
         }
+    }
+
+    private void callForHelp() {
+        countDownText.setText("Calling for help...");
+        countDownTextDetail.setText("");
+        backButton.setText("Back to Home");
+
+        Intent caller = getIntent();
+        String[] contactsSplitByComma = caller.getStringExtra("contacts").trim().replace(" ", "").replace("\n", "").split(",");
+        smsService.sendSMS(contactsSplitByComma, caller.getStringExtra("name").trim() + " seems to have fallen down! Please check up on them asap!\nCurrent Location:", this, new SMSService.SmsSendCallback() {
+            @Override
+            public void onSendSuccess() {
+                countDownText.setText("Emergency contacts\nhave been notified!");
+                countDownTextDetail.setText("");
+            }
+
+            @Override
+            public void onSendFailure() {
+                countDownText.setText("NOT all contacts\nhave been notified!");
+                countDownTextDetail.setText("Check settings and call for help manually!");
+            }
+        });
     }
 
     private void vibrate(long[] timings, int[] amplitudes, int repeatIndex) {
