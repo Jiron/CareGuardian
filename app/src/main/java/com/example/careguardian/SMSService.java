@@ -10,7 +10,6 @@ import android.os.IBinder;
 import android.telephony.SmsManager;
 
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -34,7 +33,12 @@ public class SMSService extends Service {
         return binder;
     }
 
-    public void sendSMS(String phoneNumber, String message, Activity activity) {
+    public interface SmsSendCallback {
+        void onSendSuccess();
+        void onSendFailure();
+    }
+
+    public void sendSMS(String[] phoneNumbers, String message, Activity activity, SmsSendCallback callback) {
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity);
 
         if (
@@ -42,19 +46,48 @@ public class SMSService extends Service {
                 || ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(activity, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED
         ) {
+            if (callback != null) {
+                callback.onSendFailure();
+            }
             return;
         }
         fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
-                .addOnSuccessListener(location -> {
+            .addOnSuccessListener(location -> {
+                try {
                     if (location != null) {
                         double latitude = location.getLatitude();
                         double longitude = location.getLongitude();
 
-                        String fullMessage = message + "\n\n" + "https://maps.google.com/?q=" + latitude + "," + longitude;
-
                         SmsManager smsManager = SmsManager.getDefault();
-                        smsManager.sendTextMessage(phoneNumber, null, fullMessage, null, null);
+
+                        boolean failedAtLeastOnce = false;
+
+                        String fullMessage = message + "\n\n" + "https://maps.google.com/?q=" + latitude + "," + longitude;
+                        for (String phoneNumber : phoneNumbers) {
+                            try {
+                                smsManager.sendTextMessage(phoneNumber, null, fullMessage, null, null);
+                            } catch (Exception e) {
+                                failedAtLeastOnce = true;
+                            }
+                        }
+
+                        if (callback != null) {
+                            if (failedAtLeastOnce) {
+                                callback.onSendFailure();
+                            } else {
+                                callback.onSendSuccess();
+                            }
+                        }
+                    } else {
+                        if (callback != null) {
+                            callback.onSendFailure();
+                        }
                     }
-                });
+                } catch (Exception e) {
+                    if (callback != null) {
+                        callback.onSendFailure();
+                    }
+                }
+            });
     }
 }
