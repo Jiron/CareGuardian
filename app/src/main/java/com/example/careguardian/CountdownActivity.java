@@ -20,10 +20,10 @@ import org.w3c.dom.Text;
 
 public class CountdownActivity extends AppCompatActivity {
 
-    private boolean countDownRanOut = false;
     private int countDownSeconds = 10;
     private SMSService smsService;
     private boolean isSMSServiceBound = false;
+    private boolean activityStopped = false;
     private TextView countDownText;
     private TextView countDownTextDetail;
     private Button backButton;
@@ -40,7 +40,10 @@ public class CountdownActivity extends AppCompatActivity {
 
         refreshCountdown();
 
-        backButton.setOnClickListener(view -> finish());
+        backButton.setOnClickListener(view -> {
+            activityStopped = true;
+            finish();
+        });
     }
 
     @Override
@@ -58,6 +61,9 @@ public class CountdownActivity extends AppCompatActivity {
     }
 
     private void refreshCountdown() {
+        if(activityStopped) {
+            return;
+        }
         if(countDownSeconds >= 0) {
             new Handler().postDelayed(() -> {
                 countDownText.setText(countDownSeconds + " Seconds");
@@ -67,7 +73,6 @@ public class CountdownActivity extends AppCompatActivity {
                 vibrate(new long[] { 100, 100, 100, 200 }, new int[] { 100, 150, 0, 255 }, -1); // transition up, short pause, strong vibration, 500ms total
             }, 1000);
         } else {
-            countDownRanOut = true;
             countDownText.setText("Emergency contacts\nhave been notified");
             countDownTextDetail.setText("");
             backButton.setText("Back to Home");
