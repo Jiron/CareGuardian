@@ -191,14 +191,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void validateInputs() {
         if(!nameValue.equals("") && !contactsValue.equals("")) {
             if (isAlarmActivated) {
-                inputHint.setText("(Please deactivate to change input data)");
+                inputHint.setText("Please deactivate to change input data");
             } else {
                 inputHint.setText("");
             }
             inputHint.setTextColor(Color.parseColor("#000000"));
+            permsHintRefresh();
             alarmToggler.setEnabled(true);
         } else {
-            inputHint.setText("(All fields must be filled out before activating)");
+            inputHint.setText("All fields must be filled out before activating");
             inputHint.setTextColor(Color.parseColor("#FF0000"));
             alarmToggler.setEnabled(false);
         }
@@ -248,6 +249,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    private void permsHintRefresh() {
+        if(
+            ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            || ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            inputHint.setText("Not all necessary permissions were provided.\nYou will be asked one of the permissions when pressing on \"Activate\"\nor will be asked to go to the settings.");
+            inputHint.setTextColor(Color.parseColor("#FF0000"));
+        } else {
+            inputHint.setText("");
+            inputHint.setTextColor(Color.parseColor("#000000"));
+        }
+    }
+
     private boolean checkAndRequestPermission(String permission, int requestCode) {
         if (ContextCompat.checkSelfPermission(this, permission)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -283,6 +298,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @NonNull int[] grantResults
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        permsHintRefresh();
     }
 
     private void showToast(String message) {
