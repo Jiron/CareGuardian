@@ -2,6 +2,10 @@
 
 https://github.com/Jiron/CareGuardian
 
+## Testgerät
+
+- Ich habe ein **Nothing Phone 2** mit der neusten Nothing OS vom 19.01.2024 erstellt.
+
 ## Lint Checker 
 
 Genutzt wurde grundsätzlich das CheckStyle Plugin von IDEA genutzt und es wird getestet, ob max. 30 Zeilen Code pro Methode eingegeben wurden.
