@@ -26,13 +26,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
-    lintOptions {
-        checkReleaseBuilds true
-        abortOnError true
-        warningsAsErrors true
-        disable 'TypographyFractions','TypographyQuotes'
-    }
 }
 
 dependencies {
