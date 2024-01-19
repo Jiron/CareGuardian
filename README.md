@@ -20,3 +20,7 @@ Genutzt wurde grundsätzlich das CheckStyle Plugin von IDEA genutzt und es wird 
 - Das Handy vibriert zusätzlich in einem speziellen Pattern (schwach zu stärker - Pause - stark - Pause) jede Sekunde die im Countdown abläuft, um den User darauf aufmerksam zu machen
 - Die anderen OPTIONALEN (also nicht Bewertungsrelevante Funktionen) Punkte wurden nicht umgesetzt, alle anderen schon.
 - Es wurden zusätzlich viele fehlercases getestet und diese geben entsprechende errors
+
+## Allgemeine Punkte zum beachten
+
+Der Sensor ist sehr unsensibel eingestellt, damit nur stärkere Bewegungen erkannt werden. Beim Testen gerne eine Fallbewegung oder starkes Schütteln anwenden!
