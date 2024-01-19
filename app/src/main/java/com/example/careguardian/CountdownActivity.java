@@ -16,8 +16,6 @@ import android.os.Vibrator;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 public class CountdownActivity extends AppCompatActivity {
 
     private int countDownSeconds = 10;
@@ -37,8 +35,6 @@ public class CountdownActivity extends AppCompatActivity {
         countDownText = findViewById(R.id.countDownText);
         countDownTextDetail = findViewById(R.id.countDownTextDetail);
         backButton = findViewById(R.id.backButton);
-
-        refreshCountdown();
 
         backButton.setOnClickListener(view -> {
             activityStopped = true;
@@ -73,17 +69,25 @@ public class CountdownActivity extends AppCompatActivity {
                 vibrate(new long[] { 100, 100, 100, 200 }, new int[] { 100, 150, 0, 255 }, -1); // transition up, short pause, strong vibration, 500ms total
             }, 1000);
         } else {
-            countDownText.setText("Emergency contacts\nhave been notified");
+            countDownText.setText("Calling for help...");
             countDownTextDetail.setText("");
             backButton.setText("Back to Home");
 
             Intent caller = getIntent();
-            SMSService smsService = new SMSService();
-            String[] contactsSplitByComma = caller.getStringExtra("contacts").split(",");
-            for (int i = 0; i < contactsSplitByComma.length; i++) {
-                String actualNumber = contactsSplitByComma[i].trim().replace(" ", "").replace("\n", ""); // remove spaces and line breaks
-                smsService.sendSMS(actualNumber, caller.getStringExtra("name").trim() + " seems to have fallen down! Please check up on them asap!\nCurrent Location:", this);
-            }
+            String[] contactsSplitByComma = caller.getStringExtra("contacts").trim().replace(" ", "").replace("\n", "").split(",");
+            smsService.sendSMS(contactsSplitByComma, caller.getStringExtra("name").trim() + " seems to have fallen down! Please check up on them asap!\nCurrent Location:", this, new SMSService.SmsSendCallback() {
+                @Override
+                public void onSendSuccess() {
+                    countDownText.setText("Emergency contacts\nhave been notified!");
+                    countDownTextDetail.setText("");
+                }
+
+                @Override
+                public void onSendFailure() {
+                    countDownText.setText("NOT all contacts\nhave been notified!");
+                    countDownTextDetail.setText("Check settings and call for help manually!");
+                }
+            });
         }
     }
 
@@ -103,6 +107,7 @@ public class CountdownActivity extends AppCompatActivity {
             SMSService.SMSBinder binder = (SMSService.SMSBinder)  iBinder;
             smsService = binder.getService();
             isSMSServiceBound = true;
+            refreshCountdown();
         }
 
         @Override
