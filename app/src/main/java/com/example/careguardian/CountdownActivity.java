@@ -3,13 +3,16 @@ package com.example.careguardian;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -19,6 +22,8 @@ public class CountdownActivity extends AppCompatActivity {
 
     private boolean countDownRanOut = false;
     private int countDownSeconds = 10;
+    private SMSService smsService;
+    private boolean isSMSServiceBound = false;
     private TextView countDownText;
     private TextView countDownTextDetail;
     private Button backButton;
@@ -38,6 +43,20 @@ public class CountdownActivity extends AppCompatActivity {
         backButton.setOnClickListener(view -> finish());
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent bindSMSServiceIntent = new Intent(this, SMSService.class);
+        bindService(bindSMSServiceIntent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(connection);
+        isSMSServiceBound = false;
+    }
+
     private void refreshCountdown() {
         if(countDownSeconds >= 0) {
             new Handler().postDelayed(() -> {
@@ -52,6 +71,14 @@ public class CountdownActivity extends AppCompatActivity {
             countDownText.setText("Emergency contacts\nhave been notified");
             countDownTextDetail.setText("");
             backButton.setText("Back to Home");
+
+            Intent caller = getIntent();
+            SMSService smsService = new SMSService();
+            String[] contactsSplitByComma = caller.getStringExtra("contacts").split(",");
+            for (int i = 0; i < contactsSplitByComma.length; i++) {
+                String actualNumber = contactsSplitByComma[i].trim().replace(" ", "").replace("\n", ""); // remove spaces and line breaks
+                smsService.sendSMS(actualNumber, caller.getStringExtra("name").trim() + " seems to have fallen down! Please check up on them asap!\nCurrent Location:", this);
+            }
         }
     }
 
@@ -64,4 +91,18 @@ public class CountdownActivity extends AppCompatActivity {
             v.vibrate(500);
         }
     }
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            SMSService.SMSBinder binder = (SMSService.SMSBinder)  iBinder;
+            smsService = binder.getService();
+            isSMSServiceBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            isSMSServiceBound = false;
+        }
+    };
 }
