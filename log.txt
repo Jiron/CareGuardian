@@ -1,0 +1,149 @@
+commit 440e837d3f0199e81039f250755a07457b2f87b2
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Fri Jan 19 16:22:54 2024 +0100
+
+    feat: added reflexion to project
+
+commit 235c3c06ce3abc8256ff2a4b3855d72acaec05dd
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Fri Jan 19 16:09:35 2024 +0100
+
+    fix: readme test device added
+
+commit 282ed82432f8390b59ab9e75ac4924b22d2a6849
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Fri Jan 19 15:59:15 2024 +0100
+
+    fix: readme addition
+
+commit 49f8f615e255ec130872b932128aad1fade96968
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Fri Jan 19 15:55:08 2024 +0100
+
+    feat: readme
+
+commit 3880f1d6e32e487dd92380b1089f63374a807c73
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Fri Jan 19 15:23:43 2024 +0100
+
+    feat: generated apk, added test cases, added lint
+
+commit 2aec9060eacce88381c84631be61f023ccde236f
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Fri Jan 19 14:33:26 2024 +0100
+
+    fix: split up long code into own methods
+
+commit a7b8a639ddc558d870028e7b6e31d8be579f3171
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Fri Jan 19 13:43:55 2024 +0100
+
+    fix: actually use service & error message for sms failure
+
+commit 8aa4988af3016a248c61e4be6453a3c04d8c0b5c
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Fri Jan 19 11:32:07 2024 +0100
+
+    fix: countdown doesnt run in background anymore when actually closed
+
+commit 5d57dbacfb7641a90066e205a29b6195c7d716b8
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Fri Jan 19 11:31:41 2024 +0100
+
+    fix: validation (hint error) for perms
+
+commit 12cb294ff1d191abb65430ac2d175775d741e4fe
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Fri Jan 19 11:06:32 2024 +0100
+
+    feat: added sms service which sends location to emergency contacts
+
+commit 2ac13f7510987339de5d4716bc84d862292525cb
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Fri Jan 19 09:36:53 2024 +0100
+
+    feat: add vibration
+
+commit d21d53f5dd2f5bdadb8d3c3a3bebc03038309e55
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 22:26:42 2024 +0100
+
+    feat: add website including all content
+
+commit d246fe94df1fa5e2b9db568e7c4cd8e7853bba41
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 16:42:39 2024 +0100
+
+    fix: added highter threshold
+
+commit dd6dfe3c594cc84f814777f759054175e3cec4fd
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 16:41:43 2024 +0100
+
+    feat: added design for countdown
+
+commit d2d26934aa0164c6420a4ed53ac933f18b8f249b
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 16:11:11 2024 +0100
+
+    fix: use portrait in all activities
+
+commit 7a17188f4321e47a671f6c96b70fd57e94d88056
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 16:10:20 2024 +0100
+
+    fix: use math pow instead of x * x for example
+
+commit 5809b17985678ae204f5d977a565f03d47bf9cd6
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 15:46:48 2024 +0100
+
+    feat: added a permissions request system
+
+commit 8b9171f5952d189b9b59ad4f21e5fab92d363c7c
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 14:47:35 2024 +0100
+
+    feat: working countdown
+
+commit e97bbea0dd02b3e6b83ed4a7cb3dd68653b2947e
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 14:25:46 2024 +0100
+
+    feat: new countown activity which opens through shake and closes after some time
+
+commit 135a3fadfa15afa9ef668ce412b36f353fec79ae
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 13:47:30 2024 +0100
+
+    fix: accessibility change (button disable) & bigger size
+
+commit a5ea977aefa0ac47a63fc7840f813505dc87b112
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 13:33:52 2024 +0100
+
+    fix: mistake with logic causing confusion between activated/deactivated
+
+commit 9670a0888a416f5397f3802cbc9ab1461a40a386
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 12:01:13 2024 +0100
+
+    fix: force portrait mode & let edittext fields expand
+
+commit 6ebd579e890c06c8895a0566317384ed3179acd3
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 11:49:24 2024 +0100
+
+    feat: first design for main activity
+
+commit 2f735c4f90460e7517f0acd0c1eb928b7f9a4e76
+Author: Manassés Zähnler <manasses.zaehnler@opten.ch>
+Date:   Thu Jan 18 09:51:18 2024 +0100
+
+    feat: initial android setup commit
+
+commit 6e5d94def1c1aea90c56bc70023d63f1eed0065a
+Author: Jiron <59139789+Jiron@users.noreply.github.com>
+Date:   Wed Jan 17 16:26:18 2024 +0100
+
+    Initial commit
